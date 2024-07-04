@@ -1,5 +1,6 @@
 from pytube import YouTube
 from tkinter import messagebox
+import os
 
 class Converter:
     def __init__(self, output_path, progress_callback) -> None:
@@ -19,7 +20,6 @@ class Converter:
             print(f"Error getting resolutions: {e}")
             return []
 
-        
     def download_video(self, url, resolution=None, output_path=None):
         try:
             if not output_path:
@@ -36,5 +36,24 @@ class Converter:
                 messagebox.showinfo("Download Complete", f"Video downloaded successfully to {output_path}")
             else:
                 messagebox.showerror("Error", "No stream available with the selected resolution.")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {e}")
+
+    def download_audio(self, url, output_path=None):
+        try:
+            if not output_path:
+                output_path = self.output_path
+
+            yt = YouTube(url, on_progress_callback=self.progress_callback)
+            stream = yt.streams.filter(only_audio=True).first()
+
+            if stream:
+                out_file = stream.download(output_path)
+                base, ext = os.path.splitext(out_file)
+                new_file = base + '.mp3'
+                os.rename(out_file, new_file)
+                messagebox.showinfo("Download Complete", f"Audio downloaded successfully to {output_path}")
+            else:
+                messagebox.showerror("Error", "No audio stream available.")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")

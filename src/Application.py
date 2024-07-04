@@ -31,6 +31,10 @@ class Application:
         self.convert_button = tk.Button(self.root, text="Download Video", command=self.show_resolution_options)
         self.convert_button.pack(pady=10)
 
+        #button to convert audio
+        self.audio_button = tk.Button(self.root, text="Download Audio", command=self.download_audio)
+        self.audio_button.pack(pady=10)
+
         #label to display output directory chosen
         self.dir_label = tk.Label(self.root, text="")
         self.dir_label.pack(pady=10)
@@ -101,6 +105,16 @@ class Application:
             self.dir_label.config(text=f"Output Path: {dir}")
         else:
             self.dir_label.config(text="No directory chosen.")
+
+    def download_audio(self):
+        url = self.url_entry.get()
+        dir = self.dir_label.cget("text")
+
+        if url and "Output Path" in dir:
+            converter = Converter(self.dir_path, self.show_progress)
+            threading.Thread(target=converter.download_audio, args=(url, self.dir_path)).start()
+        else:
+            messagebox.showwarning("Warning", "You need to choose the Output Path and provide a valid URL.")
 
     def run(self):
         self.root.mainloop()
