@@ -45,7 +45,7 @@ class Converter:
                 output_path = self.output_path
 
             yt = YouTube(url, on_progress_callback=self.progress_callback)
-            stream = yt.streams.filter(only_audio=True).first()
+            stream = yt.streams.filter(only_audio=True).order_by('abr').desc().first()
 
             if stream:
                 out_file = stream.download(output_path)
